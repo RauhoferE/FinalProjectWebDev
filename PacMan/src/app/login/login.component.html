@@ -16,12 +16,12 @@
         <input type="text" [(ngModel)]="this.username" placeholder="username" />
         <input type="password" [(ngModel)]="this.password" placeholder="password" />
     
-        <input type="button" (click)="this.login()" value="login" />
-        <input type="button" (click)="this.logout()" value="logout" />
+        <input type="button" (click)="this.login()" value="login" [disabled]="getLoginButton()"/>
+        <input type="button" (click)="this.logout()" value="logout" [disabled]="getLogoutButton()"/>
     </div>
     <div>
-        <a [routerLink]="['/register']">Register</a>
-        <a [routerLink]="['/game']">Play Game</a>
+        <a [routerLink]="['/register']" [hidden]="getRegisterLink()">Register</a>
+        <a [routerLink]="['/game']" [hidden]="getLogoutButton()">Play Game</a>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -28,6 +28,30 @@ export class LoginComponent implements OnInit {
         error => { console.error(error); });
 }
 
+getLoginButton() : boolean {
+  if (this.password === null || this.username === null || this.auth.token !== '') {
+    return true;
+  } else{
+    return false;
+  }
+}
+
+getLogoutButton() : boolean {
+  if (this.auth.token === '') {
+    return true;
+  } else{
+    return false;
+  }
+}
+
+getRegisterLink() : boolean {
+  if (this.auth.token === '') {
+    return false;
+  } else{
+    return true;
+  }
+}
+
 logout() {
     this.auth.token = '';
 }
