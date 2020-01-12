@@ -93,99 +93,149 @@ class Game {
         temp.setAttribute("PosX", j.toString());
         if (index === 0 || index === this.height - 1 || j === 0 || j === this.width - 1) {
           this.field[index][j] = 0;
-          temp.style.backgroundColor = this.wallColor;
+          temp.className = 'wall';
+          // temp.style.backgroundColor = this.wallColor;
         } else {
           this.field[index][j] = 99;
+          temp.className = 'backg';
         }
 
         if (index === 2 || index === 18) {
           if (j >= 2 && j <=4 || j===6 || j===12 || j >=8 && j <= 10) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 3 || index === 19) {
           if (j === 3 || j === 6 || j === 9 ||j === 12) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 4 || index === 20) {
           if (j === 3 || j >= 5 && j <= 7 || j === 9 || j===11 || j === 12) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         }else if (index === 6 || index === 22) {
           if (j === 2 || j >= 8 && j <= 10 || j === 12 ) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 7 || index === 23) {
           if (j === 2 || j >= 4 && j <= 6 || j === 8 || j === 9 || j === 12 ) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 8 || index === 24) {
           if (j === 2 || j === 4 || j === 6 || j === 8 || j === 12 ) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 9 || index === 25) {
           if (j >= 2 && j <= 4 ||  j === 6 || j >= 8 && j <= 10 || j === 12 ) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 12) {
           if (j === 2 || j === 3 ||  j === 5 || j === 10 || j === 12 ) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 13 || index === 14) {
           if ( j === 3 ||  j === 5 || j === 10 || j === 12 ) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
           }
           
         } else if (index === 15) {
-          if ( j >= 5 && j <= 10 ) {
+          if ( j >= 5 && j <= 10 || j === 12 || j === 3) {
             this.field[index][j] = 0;
-            temp.style.backgroundColor = this.wallColor;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
           } else {
             this.field[index][j] = 99;
+            temp.className = 'backg';
+          }
+        } else if (index === 27) {
+          if ( j >= 5 && j <= 9 || j === 2) {
+            this.field[index][j] = 0;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+            temp.className = 'backg';
+          }
+        } else if (index === 28) {
+          if ( j === 11) {
+            this.field[index][j] = 0;
+            temp.className = 'wall';
+            // temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+            temp.className = 'backg';
+          }
+        } else if (index === 16 || index === 17 || index === 10 || index === 11) {
+          if ( j === 0 || j === this.width - 1) {
+            this.field[index][j] = 99;
+            temp.className = 'backg';
+            //temp.style.backgroundColor = this.backGround;
+          } else {
+            this.field[index][j] = 99;
+            temp.className = 'backg';
           }
         } 
 
-
+        //TODO: Add Enemys, Player, Pallets, And Game Feature
         container.appendChild(temp);
       }
     }
+  }
 
-
-
+  private GameLoop() : void {
+    
   }
 
 
