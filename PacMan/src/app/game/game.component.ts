@@ -9,21 +9,196 @@ import { Router } from '@angular/router';
 })
 export class GameComponent implements OnInit {
 
-  public isDisabled : boolean;
-  constructor(private http: HttpClient, private router: Router) { }
+  public isDisabled: boolean;
+  private game: Game;
+
+  constructor(private http: HttpClient, private router: Router) {
+    this.game = new Game();
+  }
 
   ngOnInit() {
-            // we don't have information about Auth-Header
-            this.http.get<any>('http://localhost:3000/data')
-            .subscribe(
-                x => {
-                    console.log("Login for game ok");
-                    
-                },
-                error => {
-                  alert("you have to login first.");
-                  this.router.navigate(['login']);
-                });
+    // we don't have information about Auth-Header
+    this.http.get<any>('http://localhost:3000/data')
+      .subscribe(
+        x => {
+          console.log("Login for game ok");
+          this.game.StartGame();
+        },
+        error => {
+          alert("you have to login first.");
+          this.router.navigate(['login']);
+        });
+  }
+
+
+}
+
+class Game {
+
+  private field: number[][];
+  private width: number;
+  private height: number;
+  private palletPNG: string;
+  private packmanPNG: string;
+  private wallColor: string;
+  private ghostPNG: string;
+  private backGround: string;
+  private windowWidth: number;
+  private windowHeight: number;
+  private lives: number;
+  private points: number;
+
+  constructor() {
+    this.width = 15;
+    this.height = 30;
+    this.windowWidth = 382;
+    this.windowHeight = 470;
+    this.lives = 3;
+    this.points = 0;
+    this.backGround = 'black';
+    this.wallColor = 'green';
+    this.BuildGame = this.BuildGame.bind(this);
+    this.StartGame = this.StartGame.bind(this);
+    // this.onResizeEvent = this.onResizeEvent.bind(this);
+    // window.addEventListener("resize", this.onResizeEvent);
+  }
+
+  public StartGame(): void {
+    this.BuildGame();
+  }
+
+  private BuildGame(): void {
+    this.field = this.Create2DArray(this.height, this.width);
+    const windoWidth = this.windowWidth;
+    const windowHeight = this.windowHeight ;
+    const cellWidth = windoWidth / this.width;
+    var container = document.getElementById('game');
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = `repeat(${this.width}, ${cellWidth}px)`;
+    container.style.gridTemplateRows = `repeat(${this.height}, ${cellWidth}px)`;
+    container.style.width = windoWidth.toString() + "px";
+    container.style.width = windowHeight.toString() + "px";
+
+    while (container.firstChild != null) {
+      container.removeChild(container.firstChild);
+    }
+
+    for (let index = 0; index < this.height; index++) {
+      for (let j = 0; j < this.width; j++) {
+        const temp = document.createElement("div");
+        temp.style.width = "100%";
+        temp.style.height = "100%";
+        temp.style.backgroundColor = this.backGround;
+        temp.setAttribute("PosY", index.toString());
+        temp.setAttribute("PosX", j.toString());
+        if (index === 0 || index === this.height - 1 || j === 0 || j === this.width - 1) {
+          this.field[index][j] = 0;
+          temp.style.backgroundColor = this.wallColor;
+        } else {
+          this.field[index][j] = 99;
+        }
+
+        if (index === 2 || index === 18) {
+          if (j >= 2 && j <=4 || j===6 || j===12 || j >=8 && j <= 10) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 3 || index === 19) {
+          if (j === 3 || j === 6 || j === 9 ||j === 12) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 4 || index === 20) {
+          if (j === 3 || j >= 5 && j <= 7 || j === 9 || j===11 || j === 12) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        }else if (index === 6 || index === 22) {
+          if (j === 2 || j >= 8 && j <= 10 || j === 12 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 7 || index === 23) {
+          if (j === 2 || j >= 4 && j <= 6 || j === 8 || j === 9 || j === 12 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 8 || index === 24) {
+          if (j === 2 || j === 4 || j === 6 || j === 8 || j === 12 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 9 || index === 25) {
+          if (j >= 2 && j <= 4 ||  j === 6 || j >= 8 && j <= 10 || j === 12 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 12) {
+          if (j === 2 || j === 3 ||  j === 5 || j === 10 || j === 12 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 13 || index === 14) {
+          if ( j === 3 ||  j === 5 || j === 10 || j === 12 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+          
+        } else if (index === 15) {
+          if ( j >= 5 && j <= 10 ) {
+            this.field[index][j] = 0;
+            temp.style.backgroundColor = this.wallColor;
+          } else {
+            this.field[index][j] = 99;
+          }
+        } 
+
+
+        container.appendChild(temp);
+      }
+    }
+
+
+
+  }
+
+
+
+  // This method creates a 2d number array.
+  private Create2DArray(height: number, width: number): number[][] {
+    const arr = new Array(height);
+
+    for (let i = 0; i < height; i++) {
+      arr[i] = new Array(width);
+    }
+
+    return arr;
   }
 
 }
