@@ -5,6 +5,7 @@ var path = require("path");
 var bodyParser = require("body-parser");
 var uuid = require("uuid");
 var Server = /** @class */ (function () {
+    //private folder: string = '../PacMan/dist/PacMan';
     function Server() {
         var _this = this;
         this.serverName = "webserver";
@@ -19,6 +20,10 @@ var Server = /** @class */ (function () {
         this.app.use([bodyParser.json()]);
         // offer the angular page PacMan\dist\PacMan
         this.app.use(express.static(path.join(__dirname, "../PacMan/dist/PacMan"))); // http://expressjs.com/en/starter/static-files.html
+        // this.app.all('/*', function(req, res, next) {
+        //     // Just send the index.html for other files to support HTML5Mode
+        //     res.sendFile('index.html', { root: this.folder });
+        // });
         // make a signin endpoint with
         // - credential check
         // - logging // TODO: #GDPR :-)
@@ -94,6 +99,7 @@ var Server = /** @class */ (function () {
                 console.log('  data returned properly');
             }
         });
+        this.app.get('');
         // make a data endpoint with
         // - Auth check
         // - logging

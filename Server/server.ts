@@ -95,6 +95,7 @@ export class Server {
                 console.log('  data returned properly');
             }
         })
+        this.app.get('')
 
         // make a data endpoint with
         // - Auth check
