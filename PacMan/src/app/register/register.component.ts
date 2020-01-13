@@ -18,7 +18,7 @@ export class RegisterComponent implements OnInit {
   }
 
   register(): void {
-    this.http.post<any>('http://localhost:3000/register', {
+    this.http.post<any>('http://localhost:3000/credentials', {
         username: this.username,
         password: this.password
     }).subscribe(

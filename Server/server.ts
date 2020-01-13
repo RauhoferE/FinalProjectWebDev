@@ -31,6 +31,8 @@ export class Server {
         this.app.post('/signin', (req, res) => {
             var isLog = false;
             for (let element of this.cred) {
+                console.log(element[0]);
+                
                 if (element[0] === req.body.username && element[1] === req.body.password) {
                     isLog = true;
                     break;
@@ -50,7 +52,7 @@ export class Server {
         }
         });
 
-        this.app.post('/register', (req, res) => {
+        this.app.post('/credentials', (req, res) => {
 
             var isRegistred = false;
             for (let element of this.cred) {
@@ -64,12 +66,12 @@ export class Server {
             if (isRegistred) {
                 res.status(403).json({reason: 'Name already taken'});
             } else {
-                this.cred.push(req.body.username, req.body.password);
+                this.cred.push([req.body.username, req.body.password]);
                 res.status(200).json({reason: 'Successfull'})
             }
         });
 
-        this.app.post('/addScore', (req, res) => {
+        this.app.post('/score', (req, res) => {
             let curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
             if (this.tokens.indexOf(curToken) === -1) {

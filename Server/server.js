@@ -5,7 +5,6 @@ var path = require("path");
 var bodyParser = require("body-parser");
 var uuid = require("uuid");
 var Server = /** @class */ (function () {
-    //private folder: string = '../PacMan/dist/PacMan';
     function Server() {
         var _this = this;
         this.serverName = "webserver";
@@ -20,10 +19,6 @@ var Server = /** @class */ (function () {
         this.app.use([bodyParser.json()]);
         // offer the angular page PacMan\dist\PacMan
         this.app.use(express.static(path.join(__dirname, "../PacMan/dist/PacMan"))); // http://expressjs.com/en/starter/static-files.html
-        // this.app.all('/*', function(req, res, next) {
-        //     // Just send the index.html for other files to support HTML5Mode
-        //     res.sendFile('index.html', { root: this.folder });
-        // });
         // make a signin endpoint with
         // - credential check
         // - logging // TODO: #GDPR :-)
@@ -33,6 +28,7 @@ var Server = /** @class */ (function () {
             var isLog = false;
             for (var _i = 0, _a = _this.cred; _i < _a.length; _i++) {
                 var element = _a[_i];
+                console.log(element[0]);
                 if (element[0] === req.body.username && element[1] === req.body.password) {
                     isLog = true;
                     break;
@@ -52,7 +48,7 @@ var Server = /** @class */ (function () {
                 res.status(403).json({ reason: 'wrong credentials' });
             }
         });
-        this.app.post('/register', function (req, res) {
+        this.app.post('/credentials', function (req, res) {
             var isRegistred = false;
             for (var _i = 0, _a = _this.cred; _i < _a.length; _i++) {
                 var element = _a[_i];
@@ -68,11 +64,11 @@ var Server = /** @class */ (function () {
                 res.status(403).json({ reason: 'Name already taken' });
             }
             else {
-                _this.cred.push(req.body.username, req.body.password);
+                _this.cred.push([req.body.username, req.body.password]);
                 res.status(200).json({ reason: 'Successfull' });
             }
         });
-        this.app.post('/addScore', function (req, res) {
+        this.app.post('/score', function (req, res) {
             var curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
             if (_this.tokens.indexOf(curToken) === -1) {

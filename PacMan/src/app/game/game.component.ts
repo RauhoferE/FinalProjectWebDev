@@ -52,6 +52,7 @@ export class GameComponent implements OnInit {
     .wdiv {
       justify-content: center;
       text-align: center;
+      display: flex;
     }
     `;
     document.head.appendChild(style);
