@@ -10,19 +10,31 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-    <h2>Login</h2>
-    <div>
-        <!-- Button ausgrauen bis alles eingetragen -->
-        <input type="text" [(ngModel)]="this.username" placeholder="username" />
-        <input type="password" [(ngModel)]="this.password" placeholder="password" />
-    
-        <input type="button" (click)="this.login()" value="login" [disabled]="getLoginButton()"/>
-        <input type="button" (click)="this.logout()" value="logout" [disabled]="getLogoutButton()"/>
+    <div style="justify-content: center; align-content: center;display:grid; margin: 10px;">
+      <h2>Login</h2>
+      <div style="margin-top: 10px;">
+        You have to login first to play the game.
+      </div>
+      <div>
+        If you don't have an account please create on.
+      </div>
+      <div style="margin-top: 10px;">
+          <!-- Button ausgrauen bis alles eingetragen -->
+          <input type="text" [(ngModel)]="this.username" placeholder="username" />
+          <input type="password" [(ngModel)]="this.password" placeholder="password" />
+      
+          <input type="button" (click)="this.login()" value="login" [disabled]="getLoginButton()"/>
+          <input type="button" (click)="this.logout()" value="logout" [disabled]="getLogoutButton()"/>
+      </div>
+      <div style="margin-top: 10px;">
+          <a [routerLink]="['/register']" [hidden]="getRegisterLink()">Register</a>
+          <a [routerLink]="['/game']" [hidden]="getLogoutButton()">Play Game</a>
+      </div>
+      <div style="margin-top: 10px;">
+        <img src="../../assets/Memes/Quality-eyepatch.jpg" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="meme2">
+      </div>
     </div>
-    <div>
-        <a [routerLink]="['/register']" [hidden]="getRegisterLink()">Register</a>
-        <a [routerLink]="['/game']" [hidden]="getLogoutButton()">Play Game</a>
-    </div>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

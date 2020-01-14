@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
             console.log(x);
             this.auth.token = x.token;
         },
-        error => { console.error(error); });
+        error => { console.error(error); alert("Error wrong username or password!")});
 }
 
 getLoginButton() : boolean {

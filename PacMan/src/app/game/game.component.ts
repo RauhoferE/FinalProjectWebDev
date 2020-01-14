@@ -11,13 +11,15 @@ export class GameComponent implements OnInit {
 
   public isDisabled: boolean;
   private game: Game;
+  private isHidden: boolean;
 
   constructor(private http: HttpClient, private router: Router) {
+    this.isHidden = false;
     var style = document.createElement('style');
     style.innerHTML = `
     .wall {
       background-color: green;
-      
+
     }
 
 
@@ -96,40 +98,38 @@ export class GameComponent implements OnInit {
     this.http.get<any>('http://localhost:3000/data')
       .subscribe(
         x => {
-          console.log("Login for game ok");
-          this.game.StartGame();
         },
         error => {
           this.router.navigate(['login']);
         });
 
-        document.getElementById("startbut").addEventListener('click', e => {
-          console.log("Hello");
-          
-          this.game.StartGame();
-        });
+    document.getElementById("startbut").addEventListener('click', e => {
+      this.isHidden = true;
+      this.game.StartGame();
+    });
   }
 
-public get pointCounter() : number {
-  return this.game.points;
-}
+  public get pointCounter(): number {
+    return this.game.points;
+  }
 
+  public get liveCounter(): number {
+    return this.game.lives;
+  }
 
-
-
+  public get IsHidden(): boolean{
+    return this.isHidden;
+  }
 }
 
 class Game {
-
-
-
   private field: number[][];
   private oldField: number[][];
   private width: number;
   private height: number;
   private windowWidth: number;
   private windowHeight: number;
-  private lives: number;
+  public lives: number;
   public points: number;
   private direction: number;
   //private indestr: number;
@@ -150,20 +150,48 @@ class Game {
     //this.indestr = 0;
     this.direction = 0;
     this.ghost01Dir = 0;
-    this.ghost02Dir = 2;
-    this.ghost03Dir = 0;
+    this.ghost02Dir = 1;
+    this.ghost03Dir = 3;
     this.ghost04Dir = 2;
     document.addEventListener('keydown', e => {
+      var up;
+      var down;
+      var left;
+      var right;
+
+      for (let index = 0; index < this.field.length; index++) {
+        for (let index2 = 0; index2 < this.field[index].length; index2++) {
+          if (this.field[index][index2] === 2) {
+            up = this.field[index - 1][index2];
+            down = this.field[index + 1][index2];
+            left = this.field[index][index2 - 1];
+            right = this.field[index][index2 + 1];
+          }
+        }
+      }
       if (e.keyCode === 37) {
+        if (left === 0) {
+          return;
+        }
         this.direction = 2;
+
         e.preventDefault();
       } else if (e.keyCode === 38) {
+        if (up === 0) {
+          return;
+        }
         this.direction = 3;
         e.preventDefault();
       } else if (e.keyCode === 39) {
+        if (right === 0) {
+          return;
+        }
         this.direction = 0;
         e.preventDefault();
       } else if (e.keyCode === 40) {
+        if (down === 0) {
+          return;
+        }
         this.direction = 1;
         e.preventDefault();
       }
@@ -179,7 +207,10 @@ class Game {
   public StartGame(): void {
     this.BuildGame();
     this.loop = window.setInterval(this.GameLoop, 1000);
-    //this.GameLoop();
+  }
+
+  public StopGame(): void {
+    clearInterval(this.loop);
   }
 
   private BuildGame(): void {
@@ -187,7 +218,7 @@ class Game {
     const windoWidth = this.windowWidth;
     const windowHeight = this.windowHeight;
     const cellWidth = windoWidth / this.width;
-    var container = document.getElementById('game');
+    const container = document.getElementById('game');
     container.style.display = 'grid';
     container.style.gridTemplateColumns = `repeat(${this.width}, ${cellWidth}px)`;
     container.style.gridTemplateRows = `repeat(${this.height}, ${cellWidth}px)`;
@@ -343,13 +374,9 @@ class Game {
             temp.className = 'pallet';
           }
         } else if (index === 28) {
-          if (j === 11 || j === 0 || j === this.width - 1) {
+          if (j === 0 || j === this.width - 1) {
             this.field[index][j] = 0;
             temp.className = 'wall';
-            // temp.style.backgroundColor = this.wallColor;
-          } else {
-            this.field[index][j] = 1;
-            temp.className = 'pallet';
           }
         } else if (index === 16 || index === 17 || index === 10 || index === 11) {
           if (j === 0 || j === this.width - 1 || j === 0 || j === this.width - 1) {
@@ -371,28 +398,11 @@ class Game {
   }
 
   public GameLoop(): void {
-
-    console.log("Start");
-    
-    //this.field = this.newField;
-
     this.CloneArray();
-
-   // this.indestr--;
-
-    // if (this.indestr <= 0) {
-    //   var t = document.getElementsByClassName('player')[0] as HTMLElement;
-    //   t.style.backgroundImage = 
-    // }
-
-    var ghost01 = document.getElementsByClassName('ghost01')[0];
-    // Eine Methode für Initialer Start
-    // Eine für während das game läuft
-console.log(this.oldField.length);
 
     for (let index = 0; index < this.oldField.length; index++) {
       for (let index2 = 0; index2 < this.oldField[index].length; index2++) {
-        
+
         // Player
         if (this.oldField[index][index2] === 2) {
           if (this.direction === 0) {
@@ -400,14 +410,14 @@ console.log(this.oldField.length);
             // If index2 + 1 === 15
             if (index2 + 1 >= 15) {
               console.log("Player reached end");
-              
+
               this.field[index][0] = 2;
               this.field[index][index2] = 99;
               document.querySelectorAll(`[posy="${index}"][posx="${0}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index][index2 + 1] === 3 || this.oldField[index][index2 + 1] >= 7 && this.oldField[index][index2 + 1] < 99) {
               //If hit Change direction
-              
+
               this.lives = this.lives - 1;
               this.field[index][index2] = 99;
               this.field[16][6] = 2;
@@ -415,7 +425,7 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index][index2 + 1] === 1) {
               console.log("Pallet");
-              
+
               this.points++;
               this.field[index][index2] = 99;
               this.field[index][index2 + 1] = 2;
@@ -439,8 +449,7 @@ console.log(this.oldField.length);
               this.field[9][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${9}"][posx="${5}"]`)[0].className = 'player';
-            }else{
-              //Move Forward
+            } else if (this.oldField[index][index2 + 1] !== 0) {
               console.log("Move normal");
               console.log(this.oldField[index][index2]);
               this.field[index][index2 + 1] = 2;
@@ -448,16 +457,16 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
-          } else if(this.direction === 1) {
+          } else if (this.direction === 1) {
             if (index + 1 >= 31) {
               console.log("Player reached end");
-              
+
               this.field[0][index2] = 2;
               this.field[index][index2] = 99;
               document.querySelectorAll(`[posy="${0}"][posx="${index2}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index + 1][index2] === 3 ||
-              this.oldField[index  + 1][index2] >= 7 && this.oldField[index + 1][index2] < 99) {
+              this.oldField[index + 1][index2] >= 7 && this.oldField[index + 1][index2] < 99) {
               //If hit Change direction
               this.lives = this.lives - 1;
               this.field[index][index2] = 99;
@@ -466,13 +475,13 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index + 1][index2] === 1) {
               console.log("Pallet");
-              
+
               this.points++;
               this.field[index][index2] = 99;
               this.field[index + 1][index2] = 2;
               this.coins[index + 1][index2] = false;
 
-              document.querySelectorAll(`[posy="${index+ 1}"][posx="${index2 }"]`)[0].className = 'player';
+              document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index + 1][index2] === 6 || this.oldField[index + 1][index2] === 7) {
               this.points = this.points + 10;
@@ -480,19 +489,19 @@ console.log(this.oldField.length);
               this.field[index + 1][index2] = 2;
               document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
-            } else if (index === 8 && index2 + 1 === 5) {
+            } else if (index + 1 === 8 && index2 === 5) {
               //Teleport
               this.field[index][index2] = 99;
               this.field[25][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${25}"][posx="${5}"]`)[0].className = 'player';
-            } else if (index === 24 && index2 + 1 === 5) {
+            } else if (index + 1 === 24 && index2 === 5) {
               //Teleport
               this.field[index][index2] = 99;
               this.field[9][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${9}"][posx="${5}"]`)[0].className = 'player';
-            }else{
+            } else if (this.oldField[index + 1][index2] !== 0) {
               //Move Forward
               console.log("Move normal");
               console.log(this.oldField[index][index2]);
@@ -501,19 +510,19 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
-            
-          }else if(this.direction === 2) {
+
+          } else if (this.direction === 2) {
             if (index2 - 1 <= -1) {
               console.log("Player reached end");
-              
+
               this.field[index][14] = 2;
               this.field[index][index2] = 99;
               document.querySelectorAll(`[posy="${index}"][posx="${14}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
-            } else if (this.oldField[index - 1][index2] === 3 ||
-               this.oldField[index][index2 - 1] >= 7 && this.oldField[index][index2 - 1] < 99) {
+            } else if (this.oldField[index][index2 - 1] === 3 ||
+              this.oldField[index][index2 - 1] >= 7 && this.oldField[index][index2 - 1] < 99) {
               //If hit Change direction
-              
+
               this.lives = this.lives - 1;
               this.field[index][index2] = 99;
               this.field[16][6] = 2;
@@ -521,7 +530,7 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index][index2 - 1] === 1) {
               console.log("Pallet");
-              
+
               this.points++;
               this.field[index][index2] = 99;
               this.field[index][index2 - 1] = 2;
@@ -535,17 +544,17 @@ console.log(this.oldField.length);
               this.field[index][index2 - 1] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2 - 1}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
-            } else if (index === 8 && index2 + 1 === 5) {
+            } else if (index === 8 && index2 - 1 === 5) {
               this.field[index][index2] = 99;
               this.field[25][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${25}"][posx="${5}"]`)[0].className = 'player';
-            } else if (index === 24 && index2 + 1 === 5) {
+            } else if (index === 24 && index2 - 1 === 5) {
               this.field[index][index2] = 99;
               this.field[9][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${9}"][posx="${5}"]`)[0].className = 'player';
-            }else{
+            } else if (this.oldField[index][index2 - 1] !== 0) {
               //Move Forward
               console.log("Move normal");
               console.log(this.oldField[index][index2]);
@@ -554,7 +563,7 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2 - 1}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
-          }else{
+          } else {
             if (index - 1 <= -1) {
               console.log("Player reached end");
 
@@ -572,13 +581,13 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index - 1][index2] === 1) {
               console.log("Pallet");
-              
+
               this.points++;
               this.field[index][index2] = 99;
               this.field[index - 1][index2] = 2;
               this.coins[index - 1][index2] = false;
 
-              document.querySelectorAll(`[posy="${index- 1}"][posx="${index2 }"]`)[0].className = 'player';
+              document.querySelectorAll(`[posy="${index - 1}"][posx="${index2}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             } else if (this.oldField[index - 1][index2] === 6 || this.oldField[index - 1][index2] === 7) {
               this.points = this.points + 10;
@@ -586,19 +595,19 @@ console.log(this.oldField.length);
               this.field[index - 1][index2] = 2;
               document.querySelectorAll(`[posy="${index - 1}"][posx="${index2}"]`)[0].className = 'player';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
-            } else if (index === 8 && index2 + 1 === 5) {
+            } else if (index - 1 === 8 && index2 === 5) {
               //Teleport
               this.field[index][index2] = 99;
               this.field[25][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${25}"][posx="${5}"]`)[0].className = 'player';
-            } else if (index === 24 && index2 + 1 === 5) {
+            } else if (index - 1 === 24 && index2 === 5) {
               //Teleport
               this.field[index][index2] = 99;
               this.field[9][5] = 2;
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${9}"][posx="${5}"]`)[0].className = 'player';
-            }else{
+            } else if (this.oldField[index - 1][index2] !== 0) {
               //Move Forward
               console.log("Move normal");
               console.log(this.oldField[index][index2]);
@@ -614,13 +623,13 @@ console.log(this.oldField.length);
         if (this.oldField[index][index2] === 3) {
           // Left
           if (this.ghost01Dir === 0) {
-            if (this.oldField[index][index2 + 1] === 0 ||this.oldField[index][index2 + 1] >= 7  ) {
+            if (this.oldField[index][index2 + 1] === 0 || this.oldField[index][index2 + 1] >= 3 && this.oldField[index][index2 + 1] <= 9) {
               //If hit Change direction
-              this.ghost01Dir = 2;
-            } else if (this.oldField[index][index2 + 1] === 2 ) {
+              this.ghost01Dir = 1;
+            } else if (this.oldField[index][index2 + 1] === 2) {
               // ToDo Player detection
               console.log("Player hit");
-              
+
               this.lives--;
               this.field[index][index2] = 99;
               this.field[16][6] = 2;
@@ -629,19 +638,18 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
               document.querySelectorAll(`[posy="${16}"][posx="${6}"]`)[0].className = 'backg';
             }
-            else{
+            else {
               //Move Forward
-              //console.log("Move");
               this.field[index][index2 + 1] = 3;
               this.field[index][index2] = 99;
               document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost01';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
-          }  else if(this.ghost01Dir === 1) {
-            if (this.oldField[index + 1][index2] === 0 || this.oldField[index + 1][index2] >= 7  ) {
+          } else if (this.ghost01Dir === 1) {
+            if (this.oldField[index + 1][index2] === 0 || this.oldField[index + 1][index2] >= 3 && this.oldField[index + 1][index2] <= 9) {
               //If hit Change direction
-              this.ghost01Dir = 3;
-            }else{
+              this.ghost01Dir = 2;
+            } else {
               //Move Forward
               console.log("Move");
               console.log(this.oldField[index][index2]);
@@ -650,22 +658,22 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'ghost01';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
-          } else if(this.ghost01Dir === 2) {
-            if (this.oldField[index - 1][index2] === 0 || this.oldField[index - 1][index2] >= 7  ) {
+          } else if (this.ghost01Dir === 2) {
+            if (this.oldField[index][index2 - 1] === 0 || this.oldField[index][index2 - 1] >= 3 && this.oldField[index][index2 - 1] <= 9) {
               //If hit Change direction
-              this.ghost01Dir = 0;
-            }else{
+              this.ghost01Dir = 3;
+            } else {
               //Move Forward
-              this.field[index + 1][index2] = 3;
+              this.field[index][index2 - 1] = 3;
               this.field[index][index2] = 99;
               document.querySelectorAll(`[posy="${index}"][posx="${index2 - 1}"]`)[0].className = 'ghost01';
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
-          }else{
-            if (this.oldField[index - 1][index2] === 0 || this.oldField[index - 1][index2] >= 7  ) {
+          } else {
+            if (this.oldField[index - 1][index2] === 0 || this.oldField[index - 1][index2] >= 3 && this.oldField[index - 1][index2] <= 9) {
               //If hit Change direction
-              this.ghost01Dir = 1;
-            }else{
+              this.ghost01Dir = 0;
+            } else {
               //Move Forward
               console.log("Move");
               console.log(this.oldField[index][index2]);
@@ -675,10 +683,207 @@ console.log(this.oldField.length);
               document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
             }
           }
+        }
+
+        // Ghost02
+        if (this.oldField[index][index2] === 7) {
+          // Left
+          if (this.ghost02Dir === 0) {
+            if (this.oldField[index][index2 + 1] === 0 || this.oldField[index][index2 + 1] >= 3 && this.oldField[index][index2 + 1] <= 9) {
+              //If hit Change direction
+              this.ghost02Dir = 1;
+            } else if (this.oldField[index][index2 + 1] === 2) {
+              // ToDo Player detection
+              console.log("Player hit");
+
+              this.lives--;
+              this.field[index][index2] = 99;
+              this.field[16][6] = 2;
+              this.field[index][index2 + 1] = 7;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost02';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+              document.querySelectorAll(`[posy="${16}"][posx="${6}"]`)[0].className = 'backg';
+            }
+            else {
+              //Move Forward
+              this.field[index][index2 + 1] = 7;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost02';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else if (this.ghost02Dir === 1) {
+            if (this.oldField[index + 1][index2] === 0 || this.oldField[index + 1][index2] >= 3 && this.oldField[index + 1][index2] <= 9) {
+              //If hit Change direction
+              this.ghost02Dir = 2;
+            } else {
+              //Move Forward
+              console.log("Move");
+              console.log(this.oldField[index][index2]);
+              this.field[index + 1][index2] = 7;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'ghost02';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else if (this.ghost02Dir === 2) {
+            if (this.oldField[index][index2 - 1] === 0 || this.oldField[index][index2 - 1] >= 3 && this.oldField[index][index2 - 1] <= 9) {
+              //If hit Change direction
+              this.ghost02Dir = 3;
+            } else {
+              //Move Forward
+              this.field[index][index2 - 1] = 7;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 - 1}"]`)[0].className = 'ghost02';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else {
+            if (this.oldField[index - 1][index2] === 0 || this.oldField[index - 1][index2] >= 3 && this.oldField[index - 1][index2] <= 9) {
+              //If hit Change direction
+              this.ghost02Dir = 0;
+            } else {
+              //Move Forward
+              console.log("Move");
+              console.log(this.oldField[index][index2]);
+              this.field[index - 1][index2] = 7;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index - 1}"][posx="${index2}"]`)[0].className = 'ghost02';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          }
+        }
+
+        // Ghost03
+        if (this.oldField[index][index2] === 8) {
+          // Left
+          if (this.ghost03Dir === 0) {
+            if (this.oldField[index][index2 + 1] === 0 || this.oldField[index][index2 + 1] >= 3 && this.oldField[index][index2 + 1] <= 9) {
+              //If hit Change direction
+              this.ghost03Dir = 1;
+            } else if (this.oldField[index][index2 + 1] === 2) {
+              // ToDo Player detection
+              console.log("Player hit");
+
+              this.lives--;
+              this.field[index][index2] = 99;
+              this.field[16][6] = 2;
+              this.field[index][index2 + 1] = 8;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost03';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+              document.querySelectorAll(`[posy="${16}"][posx="${6}"]`)[0].className = 'backg';
+            }
+            else {
+              //Move Forward
+              this.field[index][index2 + 1] = 8;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost03';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else if (this.ghost03Dir === 1) {
+            if (this.oldField[index + 1][index2] === 0 || this.oldField[index + 1][index2] >= 3 && this.oldField[index + 1][index2] <= 9) {
+              //If hit Change direction
+              this.ghost03Dir = 2;
+            } else {
+              //Move Forward
+              console.log("Move");
+              console.log(this.oldField[index][index2]);
+              this.field[index + 1][index2] = 8;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'ghost03';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else if (this.ghost03Dir === 2) {
+            if (this.oldField[index][index2 - 1] === 0 || this.oldField[index][index2 - 1] >= 3 && this.oldField[index][index2 - 1] <= 9) {
+              //If hit Change direction
+              this.ghost03Dir = 3;
+            } else {
+              //Move Forward
+              this.field[index][index2 - 1] = 8;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 - 1}"]`)[0].className = 'ghost03';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else {
+            if (this.oldField[index - 1][index2] === 0 || this.oldField[index - 1][index2] >= 3 && this.oldField[index - 1][index2] <= 9) {
+              //If hit Change direction
+              this.ghost03Dir = 0;
+            } else {
+              //Move Forward
+              console.log("Move");
+              console.log(this.oldField[index][index2]);
+              this.field[index - 1][index2] = 8;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index - 1}"][posx="${index2}"]`)[0].className = 'ghost03';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          }
+        }
+
+        // Ghost04
+        if (this.oldField[index][index2] === 9) {
+          // Left
+          if (this.ghost04Dir === 0) {
+            if (this.oldField[index][index2 + 1] === 0 || this.oldField[index][index2 + 1] >= 3 && this.oldField[index][index2 + 1] <= 9) {
+              //If hit Change direction
+              this.ghost04Dir = 1;
+            } else if (this.oldField[index][index2 + 1] === 2) {
+              // ToDo Player detection
+              console.log("Player hit");
+
+              this.lives--;
+              this.field[index][index2] = 99;
+              this.field[16][6] = 2;
+              this.field[index][index2 + 1] = 9;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost04';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+              document.querySelectorAll(`[posy="${16}"][posx="${6}"]`)[0].className = 'backg';
+            }
+            else {
+              //Move Forward
+              this.field[index][index2 + 1] = 9;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 + 1}"]`)[0].className = 'ghost04';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else if (this.ghost04Dir === 1) {
+            if (this.oldField[index + 1][index2] === 0 || this.oldField[index + 1][index2] >= 3 && this.oldField[index + 1][index2] <= 9) {
+              //If hit Change direction
+              this.ghost04Dir = 2;
+            } else {
+              //Move Forward
+              console.log("Move");
+              console.log(this.oldField[index][index2]);
+              this.field[index + 1][index2] = 9;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index + 1}"][posx="${index2}"]`)[0].className = 'ghost04';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else if (this.ghost04Dir === 2) {
+            if (this.oldField[index][index2 - 1] === 0 || this.oldField[index][index2 - 1] >= 3 && this.oldField[index][index2 - 1] <= 9) {
+              //If hit Change direction
+              this.ghost04Dir = 3;
+            } else {
+              //Move Forward
+              this.field[index][index2 - 1] = 9;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index}"][posx="${index2 - 1}"]`)[0].className = 'ghost04';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          } else {
+            if (this.oldField[index - 1][index2] === 0 || this.oldField[index - 1][index2] >= 3 && this.oldField[index - 1][index2] <= 9) {
+              //If hit Change direction
+              this.ghost04Dir = 0;
+            } else {
+              //Move Forward
+              console.log("Move");
+              console.log(this.oldField[index][index2]);
+              this.field[index - 1][index2] = 9;
+              this.field[index][index2] = 99;
+              document.querySelectorAll(`[posy="${index - 1}"][posx="${index2}"]`)[0].className = 'ghost04';
+              document.querySelectorAll(`[posy="${index}"][posx="${index2}"]`)[0].className = 'backg';
+            }
+          }
+        }
       }
-      
     }
-  }
 
 
 
@@ -692,52 +897,52 @@ console.log(this.oldField.length);
     }
 
     if (this.lives === 0) {
-      //Game Over
+      this.StopGame();
     }
   }
 
 
-private CloneArray(): void{
-  this.oldField = this.Create2DArray(this.height, this.width);
-  for (let index = 0; index < this.field.length; index++) {
-    for (let index2 = 0; index2 < this.field[index].length; index2++) {
-      this.oldField[index][index2] = this.field[index][index2];
+  private CloneArray(): void {
+    this.oldField = this.Create2DArray(this.height, this.width);
+    for (let index = 0; index < this.field.length; index++) {
+      for (let index2 = 0; index2 < this.field[index].length; index2++) {
+        this.oldField[index][index2] = this.field[index][index2];
+      }
     }
   }
-}
 
-private SetCoins(): void{
-  this.coins = [[false, false, false,false, false, false,false, false, false,false, false, false,false, false, false],
-                                [false, false, true,true, true, true,true, true, true,true, true, true,true, false, false],
-                                [false, true, false,false, false, true,false, true, false,false, false, true,false, true, false],
-                                [false, true, true,false, false, true,false, true, true,false, true, true,false, true, false],
-                                [false, true, true,false, true, false,false, false, true,false, true, false,false, true, false],
-                                [false, true, true,true, true, true,true, true, true,true, true, true,true, true, false],
-                                [false, true, false,true, true, true,true, true, false,false, false, true,false, true, false],
-                                [false, true, false,true, false, false,false, true, false,false, true, true,false, true, false],
-                                [false, true, false,true, false, false,false, true, false,false, true, true,false, true, false],
-                                [false, true, false,false, false, true,false, true, false,false, false, true,false, true, false],
-                                [false, true, true,true, true, true,true, true, true,true, true, true,true, true, false],
-                                [false, true, true,true, true, true,true, true, true,true, true, true,true, true, false],
-                                [false, true, false,false, true, false,true, true, true,true, false, true,false, true, false],
-                                [false, true, true,false, true, false,true, true, true,true, false, true,false, true, false],
-                                [false, true, true,false, true, false,false, true, true,true, false, true,false, true, false],
-                                [false, true, true,false, true, false,false, false, false,false, false, true,false, true, false],
-                                [false, true, true,true, true, true,false, true, true,true, true, true,true, true, false],
-                                [false, true, true,true, true, true,true, true, true,true, true, true,true, true, false],
-                                [false, true, false,false, false, true,false, true, false,false, false, true,false, true, false],
-                                [false, true, true,false, false, true,false, true, true,false, true, true,false, true, false],
-                                [false, true, true,false, true, false,false, false, true,false, true, false,false, true, false],
-                                [false, true, true,true, true, true,true, true, true,true, true, true,true, true, false],
-                                [false, true, false,true, true, true,true, true, false,false, false, true,false, true, false],
-                                [false, true, false,true, false, false,false, true, false,false, true, true,false, true, false],
-                                [false, true, false,false, false, false,false, true, false,false, true, true,false, true, false],
-                                [false, true, false,false, false, true,false, true, false,false, false, true,false, true, false],
-                                [false, true, true,true, true, true,true, true, true,true, true, true,true, true, false],
-                                [false, true, false,true, true, false,false, false, false,false, true, true,true, true, false],
-                                [false, false, true,true, true, true,true, true, true,true, true, false,true, false, false],
-                                [false, false, false,false, false, false,false, false, false,false, false, false,false, false, false]];
-}
+  private SetCoins(): void {
+    this.coins = [[false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+    [false, false, true, true, true, true, true, true, true, true, true, true, true, false, false],
+    [false, true, false, false, false, true, false, true, false, false, false, true, false, true, false],
+    [false, true, true, false, false, true, false, true, true, false, true, true, false, true, false],
+    [false, true, true, false, true, false, false, false, true, false, true, false, false, true, false],
+    [false, true, true, true, true, true, true, true, true, true, true, true, true, true, false],
+    [false, true, false, true, true, true, true, true, false, false, false, true, false, true, false],
+    [false, true, false, true, false, false, false, true, false, false, true, true, false, true, false],
+    [false, true, false, true, false, false, false, true, false, false, true, true, false, true, false],
+    [false, true, false, false, false, true, false, true, false, false, false, true, false, true, false],
+    [false, true, true, true, true, true, true, true, true, true, true, true, true, true, false],
+    [false, true, true, true, true, true, true, true, true, true, true, true, true, true, false],
+    [false, true, false, false, true, false, true, true, true, true, false, true, false, true, false],
+    [false, true, true, false, true, false, true, true, true, true, false, true, false, true, false],
+    [false, true, true, false, true, false, false, true, true, true, false, true, false, true, false],
+    [false, true, true, false, true, false, false, false, false, false, false, true, false, true, false],
+    [false, true, true, true, true, true, false, true, true, true, true, true, true, true, false],
+    [false, true, true, true, true, true, true, true, true, true, true, true, true, true, false],
+    [false, true, false, false, false, true, false, true, false, false, false, true, false, true, false],
+    [false, true, true, false, false, true, false, true, true, false, true, true, false, true, false],
+    [false, true, true, false, true, false, false, false, true, false, true, false, false, true, false],
+    [false, true, true, true, true, true, true, true, true, true, true, true, true, true, false],
+    [false, true, false, true, true, true, true, true, false, false, false, true, false, true, false],
+    [false, true, false, true, false, false, false, true, false, false, true, true, false, true, false],
+    [false, true, false, false, false, false, false, true, false, false, true, true, false, true, false],
+    [false, true, false, false, false, true, false, true, false, false, false, true, false, true, false],
+    [false, true, true, true, true, true, true, true, true, true, true, true, true, true, false],
+    [false, true, false, true, true, false, false, false, false, false, true, true, true, true, false],
+    [false, false, true, true, true, true, true, true, true, true, true, false, true, false, false],
+    [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]];
+  }
 
 
 

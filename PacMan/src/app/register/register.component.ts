@@ -15,6 +15,8 @@ export class RegisterComponent implements OnInit {
   constructor(private http: HttpClient, private auth: AuthService, private router: Router) { }
 
   ngOnInit() {
+    this.username = null;
+    this.password = null;
   }
 
   register(): void {
@@ -32,5 +34,18 @@ export class RegisterComponent implements OnInit {
           alert("Username has already been taken. Choose antother");
         });
 }
+
+public getRegButton(): boolean {
+  if (this.username === null || this.password === null) {
+    return true;
+  } else {
+    if (this.username.trim().length === 0) {
+      return true;
+    }
+    return false;
+  }
+}
+
+
 
 }

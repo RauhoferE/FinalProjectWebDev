@@ -10,14 +10,27 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-    <h2>Register</h2>
-    <div>
-        <!-- Button ausgrauen bis alles eingetragen -->
-        <input type="text" [(ngModel)]="this.username" placeholder="username" />
-        <input type="password" [(ngModel)]="this.password" placeholder="password" />
-    
-        <input type="button" (click)="this.register()" value="register" />
+    <div style="justify-content: center; align-content: center;display:grid; margin: 10px;">
+      <h2>Register</h2>
+      <div style="margin-top: 10px;">
+        You have to register with a username and password to use the game.
+      </div>
+      <div style="margin-top: 10px;">
+  
+          <!-- Button ausgrauen bis alles eingetragen -->
+          <input type="text" [(ngModel)]="this.username" placeholder="username" />
+          <input type="password" [(ngModel)]="this.password" placeholder="password" />
+          <input type="button" (click)="this.register()" value="register" [disabled]="getRegButton()"/>
+      </div>
+      <div style="align-content: center; display: flex; margin-top: 10px;" >
+        <div>Subscribe to our newsletter? </div>
+        <input type="checkbox" name="newslatter" value="news" checked="true" disabled="true" style="margin: 10px;"/>
+      </div>
+      <img src="../../assets/Memes/Oh-what-a-feeling.jpg" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" style="margin-top: 10px;" alt="meme1">
+
     </div>
+
+    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
