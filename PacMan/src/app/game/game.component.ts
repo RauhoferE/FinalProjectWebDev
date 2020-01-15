@@ -150,7 +150,7 @@ class Game {
   private ghost04Dir: number;
   private loop: number;
   private coins: boolean[][];
-  private finishEvent: Event = new Event('GameOver');
+  private audioElement = new Audio('../../assets/Music/theme.mp3');
 
   constructor(private router: Router) {
     this.width = 15;
@@ -218,11 +218,13 @@ class Game {
 
   public StartGame(): void {
     this.BuildGame();
+    this.audioElement.play();
     this.loop = window.setInterval(this.GameLoop, 1000);
   }
 
   public StopGame(): void {
     clearInterval(this.loop);
+    this.audioElement.pause();
     localStorage.setItem('score', this.points.toString());
     this.router.navigate(['scoresite']);
   }
@@ -439,7 +441,7 @@ class Game {
                     } else if (this.oldField[index][index2 + 1] === 1) {
                       console.log("Pallet");
                       if (this.double > 0) {
-                        this.points = this.points * this.points;
+                        this.points = this.points + 2;
                       } else{
                         this.points++;
                       }
@@ -500,7 +502,7 @@ class Game {
                       console.log("Pallet");
         
                       if (this.double > 0) {
-                        this.points = this.points * this.points;
+                        this.points = this.points + 2;
                       } else{
                         this.points++;
                       }
@@ -565,7 +567,7 @@ class Game {
                       console.log("Pallet");
         
                       if (this.double > 0) {
-                        this.points = this.points * this.points;
+                        this.points = this.points + 2;
                       } else{
                         this.points++;
                       }
@@ -626,7 +628,7 @@ class Game {
                       console.log("Pallet");
         
                       if (this.double > 0) {
-                        this.points = this.points * this.points;
+                        this.points = this.points + 2;
                       } else{
                         this.points++;
                       }
