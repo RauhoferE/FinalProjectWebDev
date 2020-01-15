@@ -8,7 +8,7 @@ export class Server {
     public serverName = "webserver";
     public tokens: string[] = [];
     public cred: [string, string][] = [['admin', 'pw']];
-    public scoreCard : [string, string][] = [['admin', '100']];
+    public scoreCard : [string, string, string][] = [['admin', '99999999', 'Cool Game'],['noob', '-13', 'Bad Game']];
 
     constructor() {
         // initialize the express js app
@@ -79,7 +79,9 @@ export class Server {
                 res.status(401).json({ reason: 'not logged in' });
                 console.log('  do not return data');
             } else {
-                this.scoreCard.push([req.body.username, req.body.points]);
+
+                this.scoreCard.push([req.body.username, req.body.points, req.body.message]);
+                this.scoreCard.sort(this.compare);
                 res.status(200).json({reason: 'Points added'});
                 console.log('  data returned properly');
             }
@@ -117,6 +119,16 @@ export class Server {
 
         // start the server on port 3000
         this.app.listen(3000, () => console.log('started at http://localhost:3000/'));
+    }
+
+    private compare(a: any,b: any): any {
+            if (a[1] === b[1]) {
+                return 0;
+            }
+            else {
+                return (a[1] < b[1]) ? 1 : -1;
+            }
+        
     }
 
     private logMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {

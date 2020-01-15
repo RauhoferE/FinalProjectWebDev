@@ -10,7 +10,7 @@ var Server = /** @class */ (function () {
         this.serverName = "webserver";
         this.tokens = [];
         this.cred = [['admin', 'pw']];
-        this.scoreCard = [['admin', '100']];
+        this.scoreCard = [['admin', '99999999', 'Cool Game'], ['noob', '-13', 'Bad Game']];
         // initialize the express js app
         this.app = express();
         // register central logging
@@ -77,7 +77,8 @@ var Server = /** @class */ (function () {
                 console.log('  do not return data');
             }
             else {
-                _this.scoreCard.push([req.body.username, req.body.points]);
+                _this.scoreCard.push([req.body.username, req.body.points, req.body.message]);
+                _this.scoreCard.sort(_this.compare);
                 res.status(200).json({ reason: 'Points added' });
                 console.log('  data returned properly');
             }
@@ -115,6 +116,14 @@ var Server = /** @class */ (function () {
         // start the server on port 3000
         this.app.listen(3000, function () { return console.log('started at http://localhost:3000/'); });
     }
+    Server.prototype.compare = function (a, b) {
+        if (a[1] === b[1]) {
+            return 0;
+        }
+        else {
+            return (a[1] < b[1]) ? 1 : -1;
+        }
+    };
     Server.prototype.logMiddleware = function (req, res, next) {
         console.log(this.serverName + ': ' + req.url);
         next();

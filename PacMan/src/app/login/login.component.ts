@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
         password: this.password
     }).subscribe(
         x => {
+          localStorage.setItem('name', this.username);
             console.log(x);
             this.auth.token = x.token;
         },

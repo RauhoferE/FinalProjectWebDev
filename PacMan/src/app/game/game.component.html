@@ -53,7 +53,13 @@
       <h2 [hidden]="IsHidden">Press Start to play the game.</h2>
       <button id="startbut" [hidden]="IsHidden">Start</button>
       <div>Lives: {{liveCounter}}</div>
-      <div id="pointCounter">Points: {{pointCounter}}</div>
+      
+        <div id="pointCounter">Points: {{pointCounter}}
+          
+        </div>
+        <img src="../../assets/Sprites/Double_Points_Icon.png" alt="doublePoints" [hidden]="areDoublePointsHidden">
+      
+        
     </div>
     <div class="wdiv">
 
