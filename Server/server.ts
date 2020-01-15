@@ -9,6 +9,7 @@ export class Server {
     public tokens: string[] = [];
     public cred: [string, string][] = [['admin', 'pw']];
     public scoreCard : [string, string, string][] = [['admin', '99999999', 'Cool Game'],['noob', '-13', 'Bad Game']];
+    private tempArr: [string,string,string][] = [];
 
     constructor() {
         // initialize the express js app
@@ -95,7 +96,16 @@ export class Server {
                 res.status(401).json({ reason: 'not logged in' });
                 console.log('  do not return data');
             } else {
-                res.status(200).json({board: this.scoreCard});
+
+                var arrLength = 10;
+                if (this.scoreCard.length < 10) {
+                    arrLength = this.scoreCard.length;
+                } 
+
+                for (let index = 0; index < arrLength; index++) {
+                    this.tempArr.push(this.scoreCard[index]);
+                }
+                res.status(200).json({board: this.tempArr});
                 console.log('  data returned properly');
             }
         })

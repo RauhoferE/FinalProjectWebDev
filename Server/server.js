@@ -11,6 +11,7 @@ var Server = /** @class */ (function () {
         this.tokens = [];
         this.cred = [['admin', 'pw']];
         this.scoreCard = [['admin', '99999999', 'Cool Game'], ['noob', '-13', 'Bad Game']];
+        this.tempArr = [];
         // initialize the express js app
         this.app = express();
         // register central logging
@@ -92,7 +93,14 @@ var Server = /** @class */ (function () {
                 console.log('  do not return data');
             }
             else {
-                res.status(200).json({ board: _this.scoreCard });
+                var arrLength = 10;
+                if (_this.scoreCard.length < 10) {
+                    arrLength = _this.scoreCard.length;
+                }
+                for (var index = 0; index < arrLength; index++) {
+                    _this.tempArr.push(_this.scoreCard[index]);
+                }
+                res.status(200).json({ board: _this.tempArr });
                 console.log('  data returned properly');
             }
         });
