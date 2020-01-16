@@ -4,13 +4,20 @@ var express = require("express");
 var path = require("path");
 var bodyParser = require("body-parser");
 var uuid = require("uuid");
+// The server as a class.
 var Server = /** @class */ (function () {
+    // Initializes the server.
     function Server() {
         var _this = this;
+        // The name of the server.
         this.serverName = "webserver";
+        // The array of login tokens.
         this.tokens = [];
+        // The credentials stored on the server.
         this.cred = [['admin', 'pw']];
+        // The score board.
         this.scoreCard = [['admin', '99999999', 'Cool Game'], ['noob', '-13', 'Bad Game']];
+        // The score board with only the top ten players.
         this.tempArr = [];
         // initialize the express js app
         this.app = express();
@@ -20,11 +27,7 @@ var Server = /** @class */ (function () {
         this.app.use([bodyParser.json()]);
         // offer the angular page PacMan\dist\PacMan
         this.app.use(express.static(path.join(__dirname, "../PacMan/dist/PacMan"))); // http://expressjs.com/en/starter/static-files.html
-        // make a signin endpoint with
-        // - credential check
-        // - logging // TODO: #GDPR :-)
-        // - generate token
-        // - store tokens (further improvement: expire-time)
+        // This method checks if the username and password are correct.
         this.app.post('/signin', function (req, res) {
             var isLog = false;
             for (var _i = 0, _a = _this.cred; _i < _a.length; _i++) {
@@ -49,6 +52,7 @@ var Server = /** @class */ (function () {
                 res.status(403).json({ reason: 'wrong credentials' });
             }
         });
+        // This method lets users register an account.
         this.app.post('/credentials', function (req, res) {
             var isRegistred = false;
             for (var _i = 0, _a = _this.cred; _i < _a.length; _i++) {
@@ -69,6 +73,7 @@ var Server = /** @class */ (function () {
                 res.status(200).json({ reason: 'Successfull' });
             }
         });
+        // This method lets users post their score.
         this.app.post('/score', function (req, res) {
             var curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
@@ -84,6 +89,7 @@ var Server = /** @class */ (function () {
                 console.log('  data returned properly');
             }
         });
+        // This method gets the top score from the leader board.
         this.app.get('/score', function (req, res) {
             var curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
@@ -105,9 +111,7 @@ var Server = /** @class */ (function () {
             }
         });
         this.app.get('');
-        // make a data endpoint with
-        // - Auth check
-        // - logging
+        // This method returns data from the server.
         this.app.get('/data', function (req, res) {
             var curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
@@ -121,9 +125,10 @@ var Server = /** @class */ (function () {
                 console.log('  data returned properly');
             }
         });
-        // start the server on port 3000
+        // This method starts the server on the specified ip and port number.
         this.app.listen(3000, function () { return console.log('started at http://localhost:3000/'); });
     }
+    // THis method compares the elements of the score board with each other and sorts them descendingly.
     Server.prototype.compare = function (a, b) {
         if (a[1] === b[1]) {
             return 0;
@@ -132,6 +137,7 @@ var Server = /** @class */ (function () {
             return (a[1] < b[1]) ? 1 : -1;
         }
     };
+    // The logger middle ware.
     Server.prototype.logMiddleware = function (req, res, next) {
         console.log(this.serverName + ': ' + req.url);
         next();

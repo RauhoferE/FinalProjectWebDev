@@ -1,33 +1,43 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Score</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  </head>
-  <body>
-<div [hidden]="isHidden" style="justify-content: center; align-content: center;display:grid; margin: 10px;">
-<h2>Congrats</h2>    
-<div>
-    You've reached: {{points}} points.<br>
-    You can now type a personal message that will show up on the score board.
-</div>
-<input type="text" [(ngModel)]="this.message"/>
-<button id="send"> Send </button>
-</div>
-<div [hidden]="scoreHidden" style="justify-content: center; align-content: center;display:grid; margin: 10px;">
+<head>
+  <title>Score</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+  <div [hidden]="isHidden" style="justify-content: center; align-content: center;display:grid; margin: 10px;">
+    <h2>Congrats</h2>
+    <div>
+      You've reached: {{points}} points.<br>
+      You can now type a personal message that will show up on the score board.
+    </div>
+    <input type="text" [(ngModel)]="this.message" />
+    <button id="send"> Send </button>
+  </div>
+  <div [hidden]="scoreHidden" style="justify-content: center; align-content: center;display:grid; margin: 10px;">
     <h2>ScoreBoard</h2>
     <div id="scoreL">
     </div>
     <button id="newGame">
-        Start new Game.
+      Start new Game.
     </button>
     <img src="../../assets/Memes/ezgif-3-c2cd132ef97c.gif" alt="meme" style="margin-top: 10px;">
-</div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>

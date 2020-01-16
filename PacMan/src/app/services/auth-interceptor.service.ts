@@ -5,8 +5,10 @@ import { HttpRequest, HttpHandler, HttpInterceptor } from '@angular/common/http'
 @Injectable({
   providedIn: 'root'
 })
+// The authentification interceptor service.
 export class AuthInterceptorService {
 
+  // Creates the service.
   constructor(private auth: AuthService) { }
   intercept(req: HttpRequest<any>, next: HttpHandler) {
 

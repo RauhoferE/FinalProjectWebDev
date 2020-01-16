@@ -3,14 +3,27 @@ import * as path from "path";
 import * as bodyParser from "body-parser";
 import * as uuid from 'uuid';
 
+// The server as a class.
 export class Server {
+    // The server uses express js.
     public app: express.Express;
+
+    // The name of the server.
     public serverName = "webserver";
+
+    // The array of login tokens.
     public tokens: string[] = [];
+
+    // The credentials stored on the server.
     public cred: [string, string][] = [['admin', 'pw']];
+
+    // The score board.
     public scoreCard : [string, string, string][] = [['admin', '99999999', 'Cool Game'],['noob', '-13', 'Bad Game']];
+
+    // The score board with only the top ten players.
     private tempArr: [string,string,string][] = [];
 
+    // Initializes the server.
     constructor() {
         // initialize the express js app
         this.app = express();
@@ -24,11 +37,7 @@ export class Server {
         // offer the angular page PacMan\dist\PacMan
         this.app.use(express.static(path.join(__dirname, "../PacMan/dist/PacMan")));  // http://expressjs.com/en/starter/static-files.html
 
-        // make a signin endpoint with
-        // - credential check
-        // - logging // TODO: #GDPR :-)
-        // - generate token
-        // - store tokens (further improvement: expire-time)
+        // This method checks if the username and password are correct.
         this.app.post('/signin', (req, res) => {
             var isLog = false;
             for (let element of this.cred) {
@@ -53,6 +62,7 @@ export class Server {
         }
         });
 
+        // This method lets users register an account.
         this.app.post('/credentials', (req, res) => {
 
             var isRegistred = false;
@@ -72,6 +82,7 @@ export class Server {
             }
         });
 
+        // This method lets users post their score.
         this.app.post('/score', (req, res) => {
             let curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
@@ -88,6 +99,7 @@ export class Server {
             }
         })
 
+        // This method gets the top score from the leader board.
         this.app.get('/score', (req, res) => {
             let curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
@@ -109,11 +121,10 @@ export class Server {
                 console.log('  data returned properly');
             }
         })
+
         this.app.get('')
 
-        // make a data endpoint with
-        // - Auth check
-        // - logging
+        // This method returns data from the server.
         this.app.get('/data', (req, res) => {
             let curToken = req.header('Authorization');
             console.log('  auth: ' + curToken);
@@ -127,10 +138,11 @@ export class Server {
             }
         });
 
-        // start the server on port 3000
+        // This method starts the server on the specified ip and port number.
         this.app.listen(3000, () => console.log('started at http://localhost:3000/'));
     }
 
+    // THis method compares the elements of the score board with each other and sorts them descendingly.
     private compare(a: any,b: any): any {
             if (a[1] === b[1]) {
                 return 0;
@@ -141,6 +153,7 @@ export class Server {
         
     }
 
+    // The logger middle ware.
     private logMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
         console.log(this.serverName + ': ' + req.url);
         next();
